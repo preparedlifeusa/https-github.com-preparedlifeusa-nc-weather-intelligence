@@ -1,0 +1,24 @@
+name: NC Weather Alerts Collector
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch NWS active NC alerts
+        run: python collectors/weather.py
+      - name: Retain collection output
+        uses: actions/upload-artifact@v4
+        with:
+          name: nc-alerts
+          path: data/nc_alerts.json
+          retention-days: 7
